@@ -1,0 +1,302 @@
+    1 .META TREE-META 
+    2  
+    3 TREE-META = (".META" .ID ?1? (".LIST" :LIST[0]/ .EMPTY :MT[0]) SIZE :BEGIN[3] / 
+    4              ".CONTINUE" :MT[0] ) <"TREE 1.3">LISTUNIT :SETUP[1] * $( RULE * ) 
+    5              ".END" ?2E :ENDN[0] * <"DONE">LISTUNIT ; 
+    6  
+    7 SIZE = '( SIZ $(', SIZ :DO[2]) ') ?50E / .EMPTY :MT[0] ; 
+    8  
+    9 SIZ = .CHR '= ?54E .NUM ?55E :SIZS[2] ; 
+   10  
+   11 RULE = .ID 
+   12        ( '= EXP ?3E ('& :KPOP[1] / .EMPTY) :OUTPUT[2] / 
+   13          '/ "=>" ?3E GEN1 :SIMP[2] / 
+   14          OUTRUL :OUTPUT[2]) ?5E '; ?6E ; 
+   15  
+   16 EXP = "<-" SUBACK ?7E ('/ EXP ?8E :BALTER[2] / .EMPTY :BALTER[1]) / 
+   17       SUBEXP ('/ EXP ?9E :ALTER[2]/ .EMPTY) ; 
+   18  
+   19 SUBACK = NTEST (SUBACK :DO[2] / .EMPTY) / 
+   20          STEST (SUBACK :CONCAT[2] / .EMPTY) ; 
+   21  
+   22 SUBEXP = (NTEST / STEST) (NOBACK :CONCAT[2] / .EMPTY) ; 
+   23  
+   24 NOBACK = (NTEST / STEST ('? .NUM ?10E :LOAD[1] (.ID / '? :ZRO[0]) ?11E 
+   25           :ERCOD[3] / .EMPTY :ER[1]) ) 
+   26          (NOBACK :DO[2] / .EMPTY) ; 
+   27  
+   28 NTEST = ': .ID ?12E :NDLB[1] / 
+   29         '[ (.NUM '] ?14E :MKNODE[1] / 
+   30             GENP '] ?52E (':/.EMPTY :OUTCH[0] :DO[2] ) ) / 
+   31         '< GENP '> ?53E (': /.EMPTY :OUTCR[0] :DO[2] ) :TTY[1] / 
+   32         (".CHR" :GCHR / '* :GO) [0] / 
+   33         "=>" STEST ?15E :SCAN[1] / 
+   34         COMM ; 
+   35  
+   36 GENP = GENP1 / .EMPTY :MT[0] ; 
+   37  
+   38 GENP1 = GENP2 (GENP1 :DO[2] / .EMPTY) ; 
+   39  
+   40 GENP2 = '* ('S .NUM ?51E :PAROUT[1] / .EMPTY :ZRO[0] :PAROUT[1]) 
+   41         ('L :OL / 'C :OC / 'N :ON / .EMPTY :OS) [0] :NOPT[2] / GENU ; 
+   42  
+   43 COMM = ".EMPTY" :SET[0] / 
+   44        '| .SR ?18E :IMED[1] ; 
+   45  
+   46 STEST = '. .ID ?19E :PRIM[1] / 
+   47         .ID :CALL [1] / 
+   48         .SR :STST[1] / 
+   49         '( EXP ?20E ') ?21E / 
+   50         '' .CHR :CTST[1] / 
+   51         (.NUM '$ ?23E /'$ :ZRO[0]) (.NUM / .EMPTY :MT[0]) STEST ?24E :ARB[3] / 
+   52         '- (.SR :NSR[1] / '' .CHR :NCHR[1]) ?26E :NTST[1] ; 
+   53  
+   54 OUTRUL = '[ OUTR ?27E (OUTRUL :ALTER[2] / .EMPTY) :OSET[1] ; 
+   55  
+   56 OUTR = OUTEST "=>" ?29E OUTEXP ?30E :CONCAT[2] ; 
+   57  
+   58 OUTEST = ( ('] :MT / "-]" :ONE / "-,-]" :TWO / "-,-,-]" :THRE) [0] / 
+   59          ITEMS ']) :CNTCK[1] ; 
+   60  
+   61 ITEMS = ITEM (', ITEMS ?32E :ITMSTR[2] / .EMPTY :LITEM[1]) ; 
+   62  
+   63 ITEM = '- :MT[0] / 
+   64        .ID '[ ?33E OUTEST ?34E :RITEM[2] / 
+   65        NSIMP1 :NITEM[1] / 
+   66        '. .ID ?35E :FITEM[1] / 
+   67        .SR :TTST[1] / 
+   68        '' .CHR :CHTST[1] / 
+   69        '# .NUM ?37E :GNITEM[1] ; 
+   70  
+   71 OUTEXP = SUBOUT ('/ OUTEXP :ALTER[2] / .EMPTY) ; 
+   72  
+   73 SUBOUT = OUTT (REST :CONCAT[2] / .EMPTY) / REST ; 
+   74  
+   75 REST = OUTT (REST :OER[2]/ .EMPTY) / GEN (REST :DO[2]/ .EMPTY) ; 
+   76  
+   77 OUTT = .ID '[ ?39E ARGLST '] ?40E :OUTCLL[2] / '( OUTEXP ') ?41E / 
+   78        NSIMP1 (': ('S :OS / 'L :OL / 'N :ON / 'C :OC)[0] :NOPT[2] / .EMPTY :DOIT[1] ) ; 
+   79  
+   80 ARGLST = ARGMNT :ARG[1] (', ARGLST :DO[2] / .EMPTY) / .EMPTY :MT[0] ; 
+   81  
+   82 ARGMNT = NSIMP :ARGLD[1] / '# .NUM :GENARG[1] ; 
+   83  
+   84 NSIMP1 = <- ': NSIMP :UP[2] / NSIMP :LKT[1] ; 
+   85  
+   86 NSIMP = '* .NUM ( <- ': NSIMP :CHASE[2] / .EMPTY :LCHASE[1]) ; 
+   87  
+   88 GEN1 = (OUT/COMM) (GEN1 :DO[2] / .EMPTY) ; 
+   89  
+   90 GEN = COMM / GENU / '< :TTY[0] / '> :FIL[0] ; 
+   91  
+   92 GENU = OUT / 
+   93        '. .ID ?42E '[ ?43E ((.ID / .NUM) :LOAD[1] :CALL[2] / .EMPTY :CALL[1]) '] / 
+   94        '# .NUM :GNLBL[1] (': :DEF[1] / .EMPTY) ; 
+   95  
+   96 OUT = ('\ :OUTCR / ', :OUTAB) [0] / 
+   97       .SR :OUTSR[1] / 
+   98       '' .CHR :OUTCH[1] / 
+   99       "+W" :UPWRK[0] :OUTWRK[1] / 
+  100       "-W" :DNWRK[0] / 
+  101       ".W" :MT[0] :OUTWRK / 
+  102       ":W" :MAXWRK[0] ; 
+  103  
+  104 E = .EMPTY RESET => '; $( RULE * ) ("#EOF#" / ".END") ?99E FINISH ; 
+  105  
+  106 SETUP [-] => ,"NOLIST NUL,EXT;GEN OPD 1O1B5,1,1;BF OPD 102B5,1,1"\ 
+  107        "BT OPD 103B5,1,1;PSHN OPD 104B5,1,1; PSHK OPD 105B5,1,1"\ 
+  108        "MKND OPD 106B5,1,1;NDLBL OPD 107B5,1,1;GET OPD 110B5,1,1"\ 
+  109        "BPTR OPD 11185,1,1;BNPTR OPD 112B5,1,1;RI1 OPD 113B5,I,1"\ 
+  110        "RI2 OPD 114B5,2;FLGT OPD 115B5,1,1;BE OPD 116B5,1,1"\ 
+  111        "LAB OPD 117B5,1,1;CE OPD 120B5,1,1;LDKA OPD121B5,1,1"\ 
+  112      "$KSTKSZ EQU 1OO;$MSTKSZ EQU 130;$NSTKSZ EQU 1300;$SSTKSZ EQU 1400"\ *1 ; 
+  113  
+  114 BEGIN[-,-,-] => "$START BRM INITL; CLA; STA WRK; STA XWRK"\ *3 *2 
+  115                 ,"BRM RLINE; BRM "*1"; BRM FINISH"\ ; 
+  116  
+  117 LIST / => " CLA; STA LISTFG;" ; 
+  118  
+  119 OUTPUT[-,-] => *1:S ,"ZRO; LDA *-1; BRM CLLO"\ *2 ,"BRU RTNO", ; 
+  120  
+  121 SIMP[-,-] => *1 ,"ZRO'" *2 ,"BRR "*1\ ; 
+  122  
+  123 BALTER[-] => ,"BRM SAV"\ *1 ,"BRM RSTR"\ 
+  124       [-,-] => ,"BRM SAV" *1 ,"BRM RSTR; BT "#1\ *2 #1.D[] ; 
+  125  
+  126 D / => , "EQU *"\ ; 
+  127  
+  128 ALTER[-,SET[]] => *1 *2 
+  129      [CONCAT[-,-],-] => PMT[*1:*1,#1] *1:*2 ,"BRU "#2\ #1.D[] *2 #2:D[] 
+  130      [-,-] => *1 ,"BT "#1\ *2 #1.D[] ; 
+  131  
+  132 PMT[PRIM[-],#1] => ,"BRM "*1:*1:S"; BF "#1"; MRG "*1:*1:S"FLG; PSHK =0"\ 
+  133    [-,-] => *1 ,"BF "#1\ ; 
+  134  
+  135 ER[ALTER[-,SET[]]] => *1 
+  136   [-] => *1 ,"BE =-1"\ ; 
+  137  
+  138 DO[-,-] => *1 *2 ; 
+  139  
+  140 CONCAT[-,-] => *1 ,"BF "#1\ *2 #1.D[] ; 
+  141  
+  142 LOAD[.NUM] => ,"LDA ="*1:S\ 
+  143     [.ID] => ,"LDA "*1:S\ ; 
+  144  
+  145 CALL[-] => ,"BRM "*1\ 
+  146     [-,-] => *2 ,"BRM "*1\ ; 
+  147  
+  148 MT / => .EMPTY ; 
+  149  
+  150 ZRO / => "0" ; 
+  151  
+  152 ERCOD[-,-,-] => *1 *2 ,"BF "*3\ ; 
+  153  
+  154 NDLB[-] => ,"NDLBL ="*1\ ; 
+  155  
+  156 MKNODE[-] => ,"MKND ="*1\ ; 
+  157  
+  158 ARB[ZRO[],MT[],-] => #1.D[] *3,"BT "#1"; MIN MFLAG"\ 
+  159     [.NUM,MT[],-] => ARB1[*1] #1.D[] *3 
+  160                      ,"SKR* MSP; BT "#1"; SKN* MSP; BRU *+3; BT "#1"; MIN MFLAG"\ ARB3[] 
+  161        [-,.NUM,-] => ARB1[*2] #1.D[] *3 
+  162                      ,"SKR* MSP; BT "#1"; SKN* MSP"\ ARB2[*1,*2]\ ; 
+  163  
+  164 ARB1[-] => ,"BRM SAV; LDA ="*1:S"+1; MIN MSP; STA* MSP"\ ; 
+  165  
+  166 ARB2[-,.NUM] => ,"BRU *+4; CLA; STA MFLAG; BRU *+4; LDA* MSP; SKG ="*2 
+  167                 "-"*1"; MIN MFLAG"\ ARB3[] 
+  168          [-] => ,"BRU *+3; CLA; STA MFLAG"\ ARB3[] ; 
+  169  
+  170 ARB3 / => ,"LDA =-1; ADM MSP; BRM RSTR"\ ; 
+  171  
+  172 GCHR / => ,"ERM WPREP; BRM INC; LDA* IWP; MRG CHRFLG,; MIN NCCP; PSHK =0" ; 
+  173  
+  174 GO / => ,"BRM OUTREE; BT *+3; LDA =2; BRM CERR"\ ; 
+  175  
+  176 SET / => ,"LDA =1; STA MFLAG"\ ; 
+  177  
+  178 TTY[-] => TTY[] *1 FIL[] 
+  179     [] => ,"LDA =1; STA FNUMO"\ XCHCH[] ; 
+  180  
+  181 FIL[] => ,"LDA XFNUMO; STA FNUMO"\ ; 
+  182  
+  183 XCHCH / => ,"LDA TCHNO; XMA CHNO; STA TCHNO"\ ; 
+  184  
+  185 STRING [-] => " DATA "*1:L"; ASC "''*1''\ ; 
+  186  
+  187 OSET[-] => ,"BRM BEGN"\ *1 ; 
+  188  
+  189 CNTCK[-] => *1 ,"CLB; SKE NCNT; STB MFLAG"\ ; 
+  190  
+  191 ONE / => , "LDA =1"\ ; 
+  192 TWO / => , "LDA =2"\ ; 
+  193 THRE / => , "LDA =3"\ ; 
+  194  
+  195 ITMSTR [-,-] => *1 ,"MIN CNT; EAX -1,2"\ *2 ; 
+  196  
+  197 LITEM[-] => *1 ,"MIN CNT; LDA CNT"\ ; 
+  198  
+  199 RITEM[-,-] => ,"RI1 ="*1"; BRU "#1\ *2 ,"RI2"\ #1.D[] ; 
+  200  
+  201 OER[-,-] => *1 ,"CE =1"\ *2 ; 
+  202  
+  203 OUTCLL [-,-] => ,"LDA NSP; STA SNSP; NDLBL ="*1"'; CLA; STA CNT"\ 
+  204                 ,"LDA KT; STA ME"\ *2 
+  205                 ,"MKND CNT; PSHN SNSP; LDX KT; BRM* 0,2; BRM POPK"\ 
+  206                 ,"LDA* NSP; STA NSP"\ ; 
+  207  
+  208 ARGLD [-] => ,"LDA =ME"\ *1 ; 
+  209  
+  210 ARG [-] => *1 ,"PSHK = 0; MIN CNT"\ ; 
+  211  
+  212 CHASE [-,-] => ,"GET ="*1"; BPTR *+3; LDA =3; BRM CERR"\ *2 ; 
+  213  
+  214 LCHASE [-] => ,"GET ="*1\ ; 
+  215  
+  216 DOIT [-] => *1 ,"BNPTR "#1"; CAX; PSHK =0; BRM* 0,2; BRM POPK; BRU *+2"\ 
+  217                 #1.D[] ,"BRM OUTS"\ ; 
+  218  
+  219 NOPT [-,-] => *1 ,"BNPTR *+3; LDA =4; BRM CERR;" *2 ; 
+  220  
+  221 SCAN [-] => #1.D[] *1 ,"BT *+3; MIN NCCP; BHU "#1\ ; 
+  222  
+  223 PRIM [-] => ,"BRM "*1"; BF *+3; MRG "*1"FLG; PSHK =0"\ ; 
+  224  
+  225 STST [-] => ,"BRM TST;" STRING[*1] ; 
+  226  
+  227 CTST [-] => "LDA ="*1:N"; BRM TCH"\ ; 
+  228  
+  229 OS / => " BRM OUTS"\ ; 
+  230  
+  231 ON / => " ETR =77777B; BRM OUTN"\ ; 
+  232  
+  233 OL / => " CAX; LDA 0,2; BRM 0UTN"\ ; 
+  234  
+  235 OC / => " ETR =377B; CIO FNUM; MIN CHNO"\ ; 
+  236  
+  237 GNLBL [-] => ,"GEN GNLB"*1\ ; 
+  238  
+  239 DEF [-] => *1 ,"BRM LIT; DATA 6; ASC ' EQU *'"\ ; 
+  240  
+  241 OUTCR / => ,"BRM CRLF"\ ; 
+  242  
+  243 OUTAB / => ,"BRM TAB"\ ; 
+  244  
+  245 OUTSR [-] => ,"BRM LIT: " STRING[*1] ; 
+  246  
+  247 OUTCH [-] => ,"LDA ="*1:N"; CIO FNUMO; MIN CHNO"\ ; 
+  248  
+  249 ENDN / => "SSTOP DATA S5+SSTKSZ-5';$SS BSS SSTKSZ"\ 
+  250           "MSP DATA MSTK;$MSPT DATA MSTK+MSTKSZ-5;$MSTK BSS MSTKSZ"\ 
+  251           "NSP DATA NSTK;$NSPT DATA NSTK+NSTKSZ-5;$NSTK BSS NS1KSZ"\ 
+  252           "KSP DATA KS1K;$KSPT DATA KSTK+KSTKSZ-5;$KSTK BSS KSTKSZ"\ 
+  253           "WRK BSS 1; XWRK BSS 1; END"\ ; 
+  254  
+  255 IMED [-] => ,*1\ ; 
+  256  
+  257 NITEM [-] => ,"STX INDX; LDA KT"\ *1 
+  258             ,"CLB; LDX INDX; SKE 0,2; STB MFLAG"\ ; 
+  259  
+  260 FITEM [-] => ,"FLGT "*1:S"FLG"\ ; 
+  261  
+  262 TTST [-] => ,"BRM SSTEST;" STRING[*1] ; 
+  263  
+  264 CHTST [-] => ,"CLB; LDA ="*1:N"; MRG CHRFLG; SKE 0,2; STB MFLAG"\ ; 
+  265  
+  266 GNITEM [-] => ,"FLGT GENFLG; ETH =77777B; STA GNLB"*1:S\ ; 
+  267  
+  268 GENARG [-] => ,"LAB GNLB"*1:S"; MRG GENFLG"\ ; 
+  269  
+  270 NTST [-] => ,"LDA NCCP; STA SNCCP"\ *1 
+  271            ,"LDA =1; SKR MFLAG; BHU *+2; STA MFLAG; LDA SNCCP; STA NCCP"\ ; 
+  272  
+  273 NCHR [-] => ,"LDA ="*1:N"; BHM TCH"\ ; 
+  274  
+  275 NSR [-] => ,"BRM TST; " STRING[*1] ; 
+  276  
+  277 UP["1",-] => ,"LDA* KSP"\ *2 
+  278     [-,-] => ,"LDX KSP; LDA 1-"*1:S",2"\ *2 ; 
+  279  
+  280 LKT [-] => ,"LDA KT"\ *1 ; 
+  281  
+  282 UPWRK / => ,"MIN WRK; LDA WRK; SKG XWRK; LDA XWRK; STA XWRK"\ ; 
+  283  
+  284 DNWRK / => , "LDA =-1; ADM WRK"\ ; 
+  285  
+  286 OUTWRK [-] => *1 ,"LDA WRK; BRM OUTN"\ ; 
+  287  
+  288 MAXWRK / => ,"LDA XWJRK; BRM OUTN"\ ; 
+  289  
+  290 SIZS [.CHR,-] => *1:C"STKSZ EQU "*2:S\ ; 
+  291  
+  292 KPOP [-] => ,"MIN MSP; LDA KT; STA* M5P; MIN MSP; LDA KSP; STA* MSP", *1 
+  293             ,"LDX MSP; LDA 0,2; STA KSP; LDA -1,2; STA KT; LDA =-2; ADM MSP"\ ; 
+  294  
+  295 PAROUT[ZRO[]] => ,"LDA KT" \ 
+  296         ["0"] => ,"LDA KT" \ 
+  297           [-] => ,"LDKA ="*1\ ; 
+  298  
+  299 .END 
+
+ KSPMAX=1000  SPMAX=-2048 SPMAX=2048 >SPMAX=3584
+ ELAPSED TIME 0:00     CPU TIME 0:00
