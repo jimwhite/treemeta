@@ -1,0 +1,222 @@
+# --0--
+%TREE META SMALL ALGEBRAIC LANGUAGE - 29 SEPTEMBER 1967 %
+
+.META PROGRAM .LIST
+
+PROGRAM = ".PROGRAM" DEC * $( DEC *) :STARTN[0] ST *$('; 5T *)>
+          * FINISH" ?1E :ENDN[0] * FINISH;
+
+DEC = ".DECLARE" .ID $('I .ID :DO(2]) '; :DECN[1];
+
+E = RESET => '; $(5T *) ".END" ?99E :ENDN[0] * FINISH;
+
+5T = IFST / WHILEST / FORST / GOST / lOST / BLOCK /
+     .ID (': :LBL[1] 5T :DO[2] / '~ EXP :STORE[2]);
+
+IF5T = ".IF" EXP ".THEN" 5T (".ELSE" ST :SIFTE[3] / .EMPTY :SIFT[2]);
+
+WHILEST = '.WHILE" EXP ".DO" ST :WHL[2];
+
+FORST = "FOR" VAR '= EXP ".BY" EXP ".TO" EXP ".DO" ST :FOR[5];
+
+GOST =".GO" ".TO" .ID :GO[1];
+
+1OST = ".OPEN" ("INPUT" .ID '[ .ID '] :OPNINP[2] /
+                "OUTPUT" .ID '[ .ID '] :OPNOUT[2]) /
+       ".CLOSE" .ID :CLSFIL[1] /
+       ".READI" .ID ': IDLIST :BRS38[2] /
+       ".INPUT" .ID ': IDLI ST :XCIO[2] /
+       ".WRITE" .ID ': WLI5T :OUTNUM[2] /
+       ".OUTPUT" .ID ': WLIST :OUTCAR[2] ;
+
+IDLISl = VAR(IDL1ST :DO[2]/ .EMPTY);
+
+WLIST = (.ID / .NUM / .SR) ("WLIST :DO[2] / .EMPTY);
+
+BLOCK = ".BEGIN" ST $('; ST :DO[2]) ".END";
+
+EXP = ".IF" EXP ".THEN" EXP ".ELSE" EXP :AIF[3] / UNION;
+
+UWION = INTERSECTION ('\ / .UNION :OR[2] / .EMPTY);
+
+INTERSECTION = NEG ('& INTERSECTION :AND[2] / .EMPTY);
+
+NEG = "NOT" NEGNEG / RELATION;
+
+NEGNEG = "NOT " NEG / RELATION :NOT[1];
+
+RELATION = SUM (( "<=" SUM :LE /
+                   "<" SUM :LT /
+                  ">=" SUM :GE /
+                   "=" SUM :EQ /
+                    '# 5UM :NE ) [2] / .EMPTY);
+# --1--
+
+SUM = TERM (('+ SUM :ADD / '- SUM :SUB) [2] / .EMPTY;
+
+### ( ALGEBRAIC
+
+TERM = FACTOR (( '* TERM :MULT / '/ TERM :DIV1D /
+                 '^ TERM :REM ) [2] / .EMPTY);
+
+FACTOR = '- FACTOR :MINUS[1] / '+ FACTOR / PRIMARY;
+PRIMARY = VARIABLE / CONSTANT / '( EXP ');
+VARIABLE = .ID :VAR[I];
+CONSTANT== .NUM :CON[1];
+
+SIFTE [-,-,-] => L0PR[*1,#1,#2] BRF[*1,#2] #1,"EQU *" \ *2 SIFTE1[#2,#3];
+SIFTE1 [#1,-] => ,"BRU", #2 \ #1 , "EQU *" \ *2 #2 ,"EQU *" \;
+SIFT [-,-] => LOPR[*1;#1,#2] BRF[*1,#2] #1 , "EQU * \ *2 #2 , "EQU *" \;
+WHL [-,-] => #1 ,"EQU *"\ WHL1[*1,#2] *2 ,"BRU" , #1 \ #2 ,"EQU *" \;
+WHL1 [-,#2] => LOPR[*1,#l,#2] BRF[*1,#2] #1 ,"EQU *" \;
+GO [-] => ,"BRU" , *1 \;
+FOR [-,-,-,-,-] => <"DO NOT USE FOR STATEMENTS">\;
+LBL [-] => *1 ,"EQU *";
+AIF [-,-,-] => LOPR[*1,#1,#2] BRF[*1,#2]  #1 ,"EQU *" \ ACC[*2] AIF1[#2,*3];
+AIF1 [#1,-] => ,"BRU" , #2 \ #1 ,"EQU *" \ ACC[*2] #2 ,"EQU *" \;
+
+LOPR[OR[-,-],#1,-]] => LOPR[*1:*1,#1,#2] BRT[*1:*1,#1]
+                       #2 ,"EQU *" \ LOPR[*1:*2,#1,*3]
+   [AND[-,-],#1,-]] => LOPR[*1:*1,#2,#1] BRF[*1:*1,#1]
+                       #2 ,"EQU *" \ LOPR[*1:*2,*2,#1]
+    [NOT[-],#1,#2]] => LOPR[*1:*1,#2,#1] BRF[*1:*1,#1]
+            [-,-,-] => .EMPTY;
+
+BRT [OR[~,-],#1] => BRT[*1:*2,#1]
+   [AND[-,-],#1] => BRT[*1:*2,#1]
+     [NOT[-],#1] => BRF[*1:*1,#1]
+    [LE[-,-],#1] => BLE[*1:*1,#1,*1:*2,#1]
+    [LT[-,-],#1] => BLT[*1:*1,#1,*1:*2,#1]
+    [EQ[-,-],#1] => BEQ[*1:*1,#1,*1:*2,#1]
+    [GE[-,-],#1] => BGE[*1:*1,#1,*1:*2,#1]
+    [GT[-,-],#1] => BGT[*1:*2,#1,*1:*1,#1]
+    [NE[-,-],#1] => BGE[*1:*1,#1,*1:*2,#1]
+          [-,#1] => ACC[*1] ,"SKE =0" \ ,"BRU" , #1 \;
+
+BRF [OR[~,-],#1] => BRF[*1:*2,#1]
+   [AND[-,-],#1] => BRF[*1:*2,#1]
+     [NOT[-],#1] => BRT[*1:*1,#1]
+    [LE[-,-],#1] => BLE[*1:*2,#1,*1:*1,#1]
+    [LT[-,-],#1] => BGE[*1:*1,#1,*1:*2,#1]
+    [EQ[-,-],#1] => BNE[*1:*1,#1,*1:*2,#1]
+    [GE[-,-],#1] => BLT[*1:*1,#1,*1:*2,#1]
+    [GT[-,-],#1] => BLE[*1:*1,#1,*1:*2,#1]
+    [NE[-,-],#1] => BEQ[*1:*1,#1,*1:*2,#1]
+          [-,#1] => ACC[*1] ,"SKE =-1" \ ,"BRU" , #1 \;
+
+# --2--
+
+BLT [-,-,#1] => (TOKEN[*l] ACC[*2] ,"SKE" , *1 \ ,"SKG" ,*1 \ /
+                 WORK[*1]  ACC[*2] ."SKE" , "T+" .W \ ,"SKG" ,"T+" .W -W \ )
+
+BLE [-,-,#1] => (TOKEN[*2] ACC[*1] ,"SKG" , *2 \ /
+                 TOKEN[*1] ACC[*2] ,"SKG" , *1 \ /
+                 WORK[*2]  ACC[*l] ,"SKG , "T+".W \ ,"SKG" ,"T+" .W -W \ )
+
+BEQ [-,-,#1] => (TOKEN[*2] ACC[*1] ,"SKE" , *2 \ /
+                 TOKEN[*1] ACC[*2] ,"SKE" , *1 \ /
+                 WORK[*2]  ACC[*1] ,"SKE" ,"T+" .W -W \ )
+
+BGE [-,-,#1] => (TOKEN[*1] ACC[*2] ,"SKE" , *1 ,"SKG" ,*1 \ /
+                 WORK[*1]  ACC[*2] ."SKE" , "T+" .W \ ,"SKG" ,"T+" .W -W \ )
+                 ,"BRU" , #1 \;
+
+BNE [-,-,#1] => (TOKEN[*2] ACC[*1] ,"SKE" , *2 \ /
+                 TOKEN[*1] ACC[*2] ,"SKE" , *1 \ /
+                 WORK[*2]  ACC[*1] ,"SKE" ,"T+" .W -W \ )
+                 ,"BRU" , #1 \;
+
+STORE [-,VAR[* 1]] => "*ITS ALREADY THERE" \
+ [-,ADD[VAR[*1],CON["1"]]] => ,"MIN" ,*1 \
+        [-,ADD[VAR[*1],-]] => ACC[*2:*2] ,"ADM " *1 \
+        [-,SUB[VAR[*1],-]] => ACC[*2:*2] ,"CNA; ADM " *1 \
+                     [-,-] => BREG[*2] ,"STB" , *1 \ /
+                              ACC[*2]  ,"STA" , *1 \;
+
+ADD [MINUS[-],-] => SUB[*2,*1:*1]
+           [-,-] => TOKEN[*2] ACC[*1] ,"ADD" , *2 \ /
+                    WORK[*1]  ACC[*2] ,"ADD" ,"T+" .W -W \;
+
+SUB [-,-] => TOKEN[*2] ACC[*1] ,"SUB" , *2 \ /
+             TOKEN[*1] (BREG[*2] ,"CBA; CNA; ADD " *1 \ /
+                        ACC[*2] ,"CNA; ADD " *1 \ ) /
+             WORK[*2]  ACC[*1] ,"SUB" ,"T+" .W -W \;
+
+MINUS [-] ==> TOKEN[*1] ,"LDA" , *1 \ ,"CNA" \ /
+              BREG[*1] ,"CBA; CNA" \ /
+              ACC[*1] ,"CNA" \;
+
+DIVIDE [-,-] => TOKEN[*2] (BREG[*1] ,"CBA" \ /
+                           ACC[*1]) ,"RSH 23; DIV " *2 \ /
+                WORK[*2] (BREG[*1] ,"CBA" \ /
+                          ACC[*1]) ,"RSH 23; DIV T+" .W -W \;
+
+BREG [MULT [-,-]] => TOKEN[*1:*2] ACC[*1:*1] ,"MUL" , *1:*2 "; RSH 1" \ /
+                     TOKEN[*1:*1] ACC[*1:*2] ,"MUL" .,*1:*1 "; RSH 1" \ /
+                     WORK[*1:*1] ACC[*1:*2] ,"MUL" "T+" .W -W "; RSH 1" \
+       [REM[-,-]] => TOKEN[*1:*2] (BREG[*l:*1] ,"CBA" \ /
+                          ACC[*1]) ,"RSH 23; DIV " *1:*2 \ /
+                     WORK[*1:*2] (BREG[*1:*1] ,"CBA" \ /
+                          ACC[*1]) ,"RSH 23; DIV T+" .W -W "; RSH1" \;
+ACC [-] => TOKEN[*1] ,"LDA" *1 \ /
+           BREG[*1] ,"CBA" \ / *1;
+
+WORK [-] => BREG[*1] ,"STB","T+" +W \ /
+            ACC[*1]  ,"STA","T+" +W \;
+
+# --3--
+
+TOKEN[VAR[.ID]] => .EMPTY
+    [CON[.NUM]] => .EMPTY;
+
+MULT / => .EMPTY;
+REM / => .EMPTY;
+AND / => .EMPTY;
+OR / => .EMPTY;
+NOT / => .EMPTY;
+
+ENDN / => "T" , "BSS" ,^W \ ,"END" \ ;
+
+VAR[.ID] => *1;
+CON[.NUM] => '= *1;
+
+LE / => .EMPTY;
+LT / => .EMPTY;
+EQ / => .EMPTY;
+GE / => .EMPTY;
+GT / => .EMPTY;
+NE / => .EMPTY;
+
+DO [-,-] => *1 *2;
+
+OPNINP [-,-] => ,"CLEAR; BRS 15; BRU " *2 "; BRS 16;
+                                 BRU " *2 "; STA " *1 \;
+OPNOUT [-,-] => ,"CLEAR; BRS 18; BRU " *2 "; LDX =3; BRS 19; BRU "
+                                       *2 "; STA " *1 \;
+
+CLSFIL [-] => ,"LDA " *1 "; BRS 20" \;
+
+BRS38 [-.ID] => ,"LDA " *1 "; LDB =10; BRS 38; STA " *2 \
+       [-,-] => BRS38[*1,*2:*1] BRS38[*1,*2:*2];
+
+XCIO [-.ID] => ,"CIO " *1 "; STA " *2 \
+      [-,-] => XCIO[*1,*2:*1] XCIO[*1,*2:*2];
+
+OUTCAR [-,.ID] => ,"LDA " *2 "; CIO " *1 \
+      [-,.NUM] => ,"LDA =" *2 "; CIO " *1 \
+       [-,.SR] => ,"LDA =" #1 "; LDB =" *2:L "; LDX " *1 "; BRS 36; BRU " *2 \
+                           #1 ,"ASC " '' *2 '' \
+         [-,-] => OUTCAR[*1,*2:*1] OUTCAR[*1,*2:*2];
+
+OUTNUM [-..ID] => ,"LDA " *1 "; LDA=10; BRS 38; \
+      [-,.NUM] => ,"LDA =" *2 "; CIO " *1 \
+       [-,.SR] => ,"LDA =" #1 "; LDB =" *2:L "; LDX " *1 "; BRS 36; BRU " *2 \
+                           #1 ,"ASC " '' *2 '' \
+         [-,-] => OUTNUM[*1,*2:*1] OUTNUM[*1,*2:*2];
+
+STARTN / => "START" ,"EQU" ,"*";
+
+DECN [.ID] => *1 ,"BSS 1" \
+       [-] => DECN[*1:*1] DECNC*1:*2];
+
+.END

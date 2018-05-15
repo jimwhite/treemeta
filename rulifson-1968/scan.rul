@@ -1,0 +1,63 @@
+.META PROGRM  /* 5 */
+
+PROGRM = ".META" .ID ?1? <"META II 1.1">
+       [ " NOLIST EXT,NUL;$START BRM INITL" ]
+       [ "$KSTKSZ EQU 1;SMSTKSZ EQU 100;$NSTKSZ EQU 1;$SSSIZE EQU S50" ]
+       (".LIST" [ , "CLA; STA LISTFG" ] / .EMPTY)
+       [ , "BRM RLINE; BRM " * "; BRM FINISH" ]
+       ('( SIZ $(', SIZ) ') ?17E / .EMPTY) $ST "END" ?2E
+       [ "STAR BSS 1: SSTOP DATA SS+SSSIZE-5.:$$S BSS SSSIZE" ]
+       [ "$MSP DATA MSTK; $MSPT DATA MSTK+MSTKSZ-S; $MSTK BSS MSTKSZ" ]
+       [ "$NSP DATA NSTK; $NSPT DATA NSTK+NSTKSZ-S; $NSTK BSS NSTKSZ" ]
+       [ "$KSP DATA KSTK; $KSPT DATA KSTK+KSTKSZ-S; $KSTK BSS KSTKSZ" ]
+       [ , "END" ] <"DONE">;
+
+ST = .ID '= ?3E <"ST"> [ * , "ZRO: LDA *-1; BRM CLL" ]
+      EXP ?4E '; ?5E [ , "BRU RTN" ];
+
+EXP = SUBEXP $('/ [ , "LDA MFLAG; SKE=0; BRU " * ] SUBEXP) [ * , "EQU *" ];
+
+SUBEXP = ( GEN / ELT [ , "LDA MFLAG; SKE =1: BRU " * ] )
+                 $REST [ * , "EQU *" ];
+
+REST = GEN / ELT [ , "LDA MFLAG; SKE =0: BRU *+4" ]
+           ('? .NUM ?12E [ , "LDA =" , * "; BRM #ERR" ]
+              (.ID [ , "BRM" , * ] /
+               '? [ , "BRS EXIT" ]) ?13E /
+           .EMPTY [ , "CLA; BRM ERR; BRS EXIT" ]);
+
+ELT = '. .ID ?6E [ , "BRM" * "; STA STAR" ] /
+      .ID [ , "BRM" , * ] /
+      .SR [ , "BRM TST; DATA " *L "; ASC " '' * '' ] /
+       '( EXP ?7E ') ?8E /
+      '' .CHR [ , "LDA =" *N "; BRM TCH" ] ;
+
+GEN = '[ $OUT '] ?10E [ , "BRM CRLF" ] /
+      '$ [ * , "EQU" ] ELT ?9E
+         [ , "LDA MFLAG; SKE =0; BRU " * "; MIN MFLAG" ] /
+      ".EMPTY" [ , "LDA =1'; STA MFLAG" ] /
+      "CHR" [ , "BRM WPREP; BRM INC; LDA* IWP; STA STAR; MIN NCCP" ] /
+       '< .SR ?12E '> ?13E [ , "BRMB LITT; DATA " *L "; ASC " '' * '' "; BRM CRLFT" ]
+      "=>" [ * ,"EQU *" ] ELT ?14E
+           [ , "LDA MFLAG; SKE -0; BRU *+3; MIN NCCP; BRU " * ] /
+       '! .SR ?15E [ , * ];
+
+OUT = .SR [ , "BRM LIT; DATA " *L "; ASC " '' *'' ] /
+      ', [ , "BRM TAB" ] /
+      '* (.NUM [ , "LDA =47B; CIO FNUMO; MIN CHNO; LDA GN"
+                 * "; BRM GENLAB; STA GN" * "; BRM OUTN" ] /
+          'L [ , "LDA* STAR; BRM OUTN" ] /
+          'N [ , "LDA STAR; BRM OUTN"] /
+          'C [ , "LDA STAR; CIO FNUM0; MIN CHNO" ] /
+          .EMPTY [ , "LDA STAR'; BRN OUTS" ]) /
+      '' .CHR [ , "LDA =" *N "; CIO FNUMO; MIN CHNO" ] /
+      ': [ , "BRM CRLF" ];
+
+E = => '; [ , "BRU RTN" ] $ST ".END" ?11E FINISH ;
+FINISH = .EMPTY <"FINISH">;
+
+SIZ = "K=" .NUM ["$KSTKSZ EQU "*] /
+      "M=" .NUM ["$MSTKSZ EQU "*] /
+      "N=" .NUM ["$NSTKSZ EQU "*] /
+      "S=" .NUM ["$SSTKSZ EQU "*] ;
+.END
